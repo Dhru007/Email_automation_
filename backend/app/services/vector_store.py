@@ -20,14 +20,12 @@ COLLECTION_NAME = "knowledge_base"
 def get_client():
     global _client
     if _client is None:
+        import chromadb   # moved inside — lazy load
         if settings.chroma_mode == "http":
-            _client = chromadb.HttpClient(
-                host=settings.chroma_http_host, port=settings.chroma_http_port
-            )
+            _client = chromadb.HttpClient(...)
         else:
             _client = chromadb.PersistentClient(path=settings.chroma_persist_dir)
     return _client
-
 
 def get_collection():
     global _collection
