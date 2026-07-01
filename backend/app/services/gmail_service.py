@@ -4,6 +4,9 @@ Gmail API integration.
 - Polling for new messages (called by APScheduler every N seconds, see scheduler.py)
 - Auto-labels processed emails so they are not re-processed
 """
+
+import os
+os.environ["OAUTHLIB_RELAX_TOKEN_SCOPE"] = "1"
 import base64
 from datetime import datetime, timedelta
 from google.oauth2.credentials import Credentials
