@@ -1,41 +1,118 @@
+# services:
+#   - type: web
+#     name: ai-email-automation-api
+#     env: python
+#     plan: free
+#     buildCommand: "pip install -r requirements.txt"
+#     startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+#     healthCheckPath: /api/health
+#     disk:
+#       name: chroma-data
+#       mountPath: /opt/render/project/src/chroma_data
+#       sizeGB: 1
+#     envVars:
+#       - key: DATABASE_URL
+#         sync: false
+#       - key: JWT_SECRET
+#         sync: false
+#       - key: ADMIN_EMAIL
+#         sync: false
+#       - key: ADMIN_PASSWORD
+#         sync: false
+#       - key: GROQ_API_KEY
+#         sync: false
+#       - key: GROQ_MODEL
+#         value: llama-3.3-70b-versatile
+#       - key: GROQ_TEMPERATURE
+#         value: "0.5"
+#       - key: EMBEDDING_MODEL
+#         value: sentence-transformers/all-MiniLM-L6-v2
+#       - key: CHROMA_MODE
+#         value: persistent
+#       - key: CHROMA_PERSIST_DIR
+#         value: ./chroma_data
+#       - key: GOOGLE_CLIENT_ID
+#         sync: false
+#       - key: GOOGLE_CLIENT_SECRET
+#         sync: false
+#       - key: GOOGLE_REDIRECT_URI
+#         sync: false
+#       - key: FRONTEND_ORIGIN
+#         sync: false
 services:
   - type: web
     name: ai-email-automation-api
     env: python
+
     plan: free
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+
     healthCheckPath: /api/health
+
     disk:
       name: chroma-data
       mountPath: /opt/render/project/src/chroma_data
       sizeGB: 1
+
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+
       - key: DATABASE_URL
         sync: false
+
       - key: JWT_SECRET
         sync: false
+
+      - key: JWT_ALGORITHM
+        value: HS256
+
+      - key: JWT_EXPIRE_MINUTES
+        value: "1440"
+
       - key: ADMIN_EMAIL
         sync: false
+
       - key: ADMIN_PASSWORD
         sync: false
+
       - key: GROQ_API_KEY
         sync: false
+
       - key: GROQ_MODEL
         value: llama-3.3-70b-versatile
+
       - key: GROQ_TEMPERATURE
         value: "0.5"
+
       - key: EMBEDDING_MODEL
         value: sentence-transformers/all-MiniLM-L6-v2
+
       - key: CHROMA_MODE
         value: persistent
+
       - key: CHROMA_PERSIST_DIR
-        value: ./chroma_data
+        value: /opt/render/project/src/chroma_data
+
       - key: GOOGLE_CLIENT_ID
         sync: false
+
       - key: GOOGLE_CLIENT_SECRET
         sync: false
+
       - key: GOOGLE_REDIRECT_URI
         sync: false
+
+      - key: GMAIL_POLL_INTERVAL_SECONDS
+        value: "60"
+
+      - key: SLACK_WEBHOOK_URL
+        sync: false
+
       - key: FRONTEND_ORIGIN
         sync: false
