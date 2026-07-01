@@ -36,14 +36,19 @@ def get_collection():
 
 def add_chunks(article_id: str, title: str, category_tags: list[str], chunks: list[str]):
     collection = get_collection()
-    ids = [f"{article_id}-{i}-{uuid.uuid4().hex[:6]}" for i in range(len(chunks))]
-    embeddings = embed_texts(chunks)
-    metadatas = [
-        {"article_id": article_id, "title": title, "tags": ",".join(category_tags)}
-        for _ in chunks
-    ]
-    collection.add(ids=ids, embeddings=embeddings, documents=chunks, metadatas=metadatas)
-    return ids
+    BATCH_SIZE = 8
+    all_ids = []
+    for i in range(0, len(chunks), BATCH_SIZE):
+        batch = chunks[i:i + BATCH_SIZE]
+        ids = [f"{article_id}-{i+j}-{uuid.uuid4().hex[:6]}" for j in range(len(batch))]
+        embeddings = embed_texts(batch)
+        metadatas = [
+            {"article_id": article_id, "title": title, "tags": ",".join(category_tags)}
+            for _ in batch
+        ]
+        collection.add(ids=ids, embeddings=embeddings, documents=batch, metadatas=metadatas)
+        all_ids.extend(ids)
+    return all_ids
 
 
 def query_similar(query: str, top_k: int = 5, category_filter: str | None = None):
